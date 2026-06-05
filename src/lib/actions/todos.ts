@@ -34,6 +34,23 @@ export async function toggleTodo(id: string, completed: boolean) {
   revalidatePath('/todos')
 }
 
+export async function updateTodoTitle(id: string, title: string) {
+  if (title.trim() === '') return
+
+  const supabase = await createServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Unauthorized')
+
+  const { error } = await supabase
+    .from('todos')
+    .update({ title: title.trim() })
+    .eq('id', id)
+    .eq('user_id', user.id)
+
+  if (error) throw new Error(error.message)
+  revalidatePath('/todos')
+}
+
 export async function deleteTodo(id: string) {
   const supabase = await createServerClient()
   const { data: { user } } = await supabase.auth.getUser()
