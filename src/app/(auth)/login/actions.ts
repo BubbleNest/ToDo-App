@@ -1,6 +1,7 @@
 'use server'
 
 import { createServerClient } from '@/lib/supabase/server'
+import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 
 export type SendMagicLinkState = {
@@ -18,13 +19,16 @@ export async function sendMagicLink(
     return { error: 'Adresse email invalide.' }
   }
 
+  const headersList = await headers()
+  const host = headersList.get('host') ?? 'localhost:3000'
+  const protocol = host.startsWith('localhost') ? 'http' : 'https'
+  const emailRedirectTo = `${protocol}://${host}/auth/confirm`
+
   const supabase = await createServerClient()
 
   const { error } = await supabase.auth.signInWithOtp({
     email,
-    options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/auth/confirm`,
-    },
+    options: { emailRedirectTo },
   })
 
   if (error) {
