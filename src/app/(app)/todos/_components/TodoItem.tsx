@@ -4,6 +4,17 @@ import { useTransition } from 'react'
 import { toggleTodo, deleteTodo } from '@/lib/actions/todos'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import { Trash2Icon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { Todo } from '@/lib/queries/todos'
@@ -41,16 +52,36 @@ export function TodoItem({ todo }: Props) {
       >
         {todo.title}
       </label>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="size-7 text-muted-foreground hover:text-destructive"
-        onClick={handleDelete}
-        disabled={isPending}
-        aria-label="Supprimer"
-      >
-        <Trash2Icon className="size-4" />
-      </Button>
+
+      <AlertDialog>
+        <AlertDialogTrigger
+          render={
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-7 text-muted-foreground hover:text-destructive"
+              disabled={isPending}
+              aria-label="Supprimer"
+            />
+          }
+        >
+          <Trash2Icon className="size-4" />
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Supprimer ce todo ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              &ldquo;{todo.title}&rdquo; sera définitivement supprimé.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete}>
+              Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </li>
   )
 }
